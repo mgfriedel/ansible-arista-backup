@@ -1,0 +1,14 @@
+---
+- name: Backup EOS Devices
+  hosts: eos_devices
+  connection: local
+  #Gather to populate timestamp
+  gather_facts: true
+  roles:
+    - backup-eos
+
+- name: Backup CVP Clusters
+  hosts: cvp_clusters
+  gather_facts: false
+  roles:
+    - backup-cvp

@@ -1,0 +1,33 @@
+---
+- name: Get backup folder contents
+  shell: ls -dt /data/cvpbackup/*
+  register: cvpBackupFiles
+  changed_when: false
+
+- name: Finding Latest backups
+  set_fact:
+    cvp_backup: "{{ cvpBackupFiles.stdout_lines | reject('match', '.*cvp.eosimages.*') | list | first }}"
+    cvp_imagebackup: "{{ cvpBackupFiles.stdout_lines | select('match', '.*cvp.eosimages.*') | list | first }}"
+  changed_when: false
+
+#- name: Debug
+#  debug:
+#    msg:
+#       - "{{ cvp_backup }}"
+#       - "{{ cvp_imagebackup }}"
+
+- name: Create CVP backup dest path
+  file:
+    path: "./backups/cvp/{{ ansible_host }}"
+    state: directory
+    recurse: yes
+
+- name: Fetch CVP Backup files
+  fetch:
+    src: "{{ item }}"
+    dest: "./backups/cvp/{{ ansible_host}}/"
+    # Without flat: yes, fetch creates a subdir for each host with full src path
+    flat: yes
+  loop:
+    - "{{ cvp_backup }}"
+    - "{{ cvp_imagebackup }}"

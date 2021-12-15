@@ -1,0 +1,5 @@
+ansible_ssh_pass: CHANGEME #!vault...
+ansible_user: root
+ansible_connection: ssh
+  
+ansible_python_interpreter: /usr/bin/python

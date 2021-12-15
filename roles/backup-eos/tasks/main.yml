@@ -1,0 +1,36 @@
+---
+- name: Get EOS Device MAC
+  eos_command:
+    commands:
+    - command: show version
+      output: json
+    - command: show hostname
+      output: json
+    - command: show running-config
+      output: text
+  register: eos_info
+
+#- name: Debug
+#  debug:
+#    msg:
+#      - "{{ eos_info.stdout[0].systemMacAddress }}"
+#      - "{{ eos_info.stdout[1].hostname }}"
+#      - "{{ eos_info.stdout[2] }}"
+
+- name: Create backup dest path w/ MAC
+  file:
+    path: "./backups/eos/{{ eos_info.stdout[0].systemMacAddress }}"
+    state: directory
+    recurse: yes
+
+- name: Create Symlink w/ Hostname
+  file:
+    src: "{{ eos_info.stdout[0].systemMacAddress }}"
+    path: "./backups/eos/{{ eos_info.stdout[1].hostname }}"
+    force: yes
+    state: link
+
+- name: Save Running Config
+  copy:
+    content: "{{ eos_info.stdout[2] }}"
+    dest: "./backups/eos/{{ eos_info.stdout[0].systemMacAddress }}/{{ '%Y-%m-%d_%H:%M:%S' | strftime(ansible_date_time.epoch) }}_running-config.conf"

@@ -1,0 +1,12 @@
+ansible_user: CHANGEME
+ansible_password: CHANGEME #!vault...
+
+ansible_connection: httpapi
+ansible_httpapi_validate_certs: false
+ansible_httpapi_use_ssl: true
+
+ansible_network_os: arista.eos.eos
+ansible_become: yes
+ansible_become_method: enable
+#proxy_env:
+#  http_proxy: http://proxy.example.com:8080
